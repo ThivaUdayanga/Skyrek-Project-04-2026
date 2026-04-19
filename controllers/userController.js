@@ -1,5 +1,6 @@
 import User from '../models/user.js'
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 
 export function createUser(req, res){
 
@@ -54,9 +55,21 @@ export function loginUser(req, res){
 
                 //console.log(isPasswordValid)
                 if(isPasswordValid){
+
+                    // Here you can generate a JWT token and send it back to the client for authentication in future requests
+                    const token = jwt.sign({
+                        email : user.email,
+                        firstName : user.firstName,
+                        lastName : user.lastName,
+                        role: user.role,
+                        image : user.image,
+                        isEmailVerified : user.isEmailVerified
+                    }, 'kv-computers-67')
+
                     res.status(200).json(
                         {
-                            message : "Login successful"
+                            message : "Login successful",
+                            token : token
                         }
                     )
                 }else{
