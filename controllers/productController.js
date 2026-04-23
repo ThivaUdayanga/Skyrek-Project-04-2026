@@ -62,6 +62,13 @@ export async function createProduct(req, res){
         const newProduct = new Product(data)
 
         await newProduct.save()
+
+        res.status(201).json(
+            {
+                message : "Product created successfully",
+                product : newProduct
+            }
+        )
         
     } catch (error) {
         res.ststus(500).json(
@@ -71,6 +78,66 @@ export async function createProduct(req, res){
             }
         )
     }    
+}
+
+export async function updateProduct(req, res){
+    if(!isAdmin(req)){
+        res.status(401).json(
+            {
+                message : "Only admin users can update products"
+            }
+        )
+        return;
+    }
+    try {
+        const productId = req.params.productId
+
+        const data = {}
+
+        if(req.body.name == null){
+            res.ststus(400).json(
+                {
+                    message : "Product name is required"
+                }
+            )
+        }
+
+        data.name = req.body.name
+        data.description = req.body.description || ""
+        data.altName = req.body.altName || []
+
+        if(req.body.price == null){
+            res.ststus(400).json(
+                {
+                    message : "Product price is required"
+                }
+            )
+        }
+
+        data.price = req.body.price
+        data.labelPrice = req.body.labelPrice || req.body.price
+        data.category = req.body.category || "Others"
+        data.images = req.body.images || ["https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png", "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"]
+        data.isVisible = req.body.isVisible
+        data.brand = req.body.brand || "Generic"
+        data.model = req.body.model || "Standard"
+
+        await Product.updateOne({productId: productId}, data)
+
+        res.status(201).json(
+            {
+                message : "Product updated successfully"
+            }
+        )
+        
+    } catch (error) {
+        res.status(500).json(
+            {
+                message : "Failed to update product",
+                error : error
+            }
+        )
+    }
 }
 
 export async function getProducts(req, res){
@@ -110,7 +177,7 @@ export async function deleteProduct(req, res){
         return;
     }
     try{
-        const productId = req.body.productId
+        const productId = req.params.productId
         await Product.deleteOne(
             {
                 productId : productId
@@ -126,6 +193,51 @@ export async function deleteProduct(req, res){
             {
                 message : "Failed to delete product",
                 error : err
+            }
+        )
+    }
+}
+
+export async function getProductById(req, res){
+    try {
+        
+        const productId = req.params.productId
+        const product = await Product.findOne({ productId: productId })
+
+        if(product == null){
+            res.status(404).json(
+                {
+                    message : "Product not found"
+                }
+            )
+        }
+
+        if(!product.isVisible){
+            if(isAdmin(req)){
+                res.status(200).json(
+                    {
+                        product
+                    }
+                )
+            }else{
+                res.status(404).json(
+                    {
+                        message : "Product not found"
+                    }
+                )
+            }
+        }else{
+            res.status(200).json(
+                {
+                    product
+                }
+            )
+        }
+    } catch (error) {
+        res.status(500).json(
+            {
+                message : "Failed to fetch product",
+                error : error
             }
         )
     }
