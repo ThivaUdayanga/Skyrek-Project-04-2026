@@ -20,7 +20,7 @@ export async function createProduct(req, res){
             }
         )
         if(existingProduct){
-            res.ststus(400).json(
+            return res.status(400).json(
                 {
                     message : "Product with given productId already exists"
                 }
@@ -32,7 +32,7 @@ export async function createProduct(req, res){
         data.productId = req.body.productId
 
         if(req.body.name == null){
-            res.ststus(400).json(
+            return res.status(400).json(
                 {
                     message : "Product name is required"
                 }
@@ -44,7 +44,7 @@ export async function createProduct(req, res){
         data.altName = req.body.altName || []
 
         if(req.body.price == null){
-            res.ststus(400).json(
+            return res.status(400).json(
                 {
                     message : "Product price is required"
                 }
@@ -55,7 +55,7 @@ export async function createProduct(req, res){
         data.labelPrice = req.body.labelPrice || req.body.price
         data.category = req.body.category || "Others"
         data.images = req.body.images || ["https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png", "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"]
-        data.isVisible = req.body.isVisible
+        data.isVisible = req.body.isVisible ?? true
         data.brand = req.body.brand || "Generic"
         data.model = req.body.model || "Standard"
 
@@ -71,7 +71,7 @@ export async function createProduct(req, res){
         )
         
     } catch (error) {
-        res.ststus(500).json(
+        return res.status(500).json(
             {
                 message : "Failed to create product",
                 error : error
@@ -95,7 +95,7 @@ export async function updateProduct(req, res){
         const data = {}
 
         if(req.body.name == null){
-            res.ststus(400).json(
+            return res.status(400).json(
                 {
                     message : "Product name is required"
                 }
@@ -107,7 +107,7 @@ export async function updateProduct(req, res){
         data.altName = req.body.altName || []
 
         if(req.body.price == null){
-            res.ststus(400).json(
+            return res.status(400).json(
                 {
                     message : "Product price is required"
                 }
@@ -124,14 +124,14 @@ export async function updateProduct(req, res){
 
         await Product.updateOne({productId: productId}, data)
 
-        res.status(201).json(
+        return res.status(201).json(
             {
                 message : "Product updated successfully"
             }
         )
         
     } catch (error) {
-        res.status(500).json(
+        return res.status(500).json(
             {
                 message : "Failed to update product",
                 error : error
@@ -205,7 +205,7 @@ export async function getProductById(req, res){
         const product = await Product.findOne({ productId: productId })
 
         if(product == null){
-            res.status(404).json(
+            return res.status(404).json(
                 {
                     message : "Product not found"
                 }
@@ -214,27 +214,27 @@ export async function getProductById(req, res){
 
         if(!product.isVisible){
             if(isAdmin(req)){
-                res.status(200).json(
+                return res.status(200).json(
                     {
                         product
                     }
                 )
             }else{
-                res.status(404).json(
+                return res.status(404).json(
                     {
-                        message : "Product not found"
+                        message : "Product not found because it is not visible"
                     }
                 )
             }
         }else{
-            res.status(200).json(
+            return res.status(200).json(
                 {
                     product
                 }
             )
         }
     } catch (error) {
-        res.status(500).json(
+        return res.status(500).json(
             {
                 message : "Failed to fetch product",
                 error : error
