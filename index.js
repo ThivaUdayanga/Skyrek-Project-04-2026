@@ -3,17 +3,20 @@ import mongoose from 'mongoose'
 import userRouter from './routers/userRouter.js'
 import productRouter from './routers/productRouter.js'
 import autherizeUser from './lib/jwtMiddleware.js'
+import cors from 'cors'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const app = express()
-
+app.use(cors())
 app.use(express.json())
 
 app.use(
     autherizeUser
 )
 
-const mongoURI = "mongodb://admin:1234@ac-ie5f5aa-shard-00-00.92yqpkf.mongodb.net:27017,ac-ie5f5aa-shard-00-01.92yqpkf.mongodb.net:27017,ac-ie5f5aa-shard-00-02.92yqpkf.mongodb.net:27017/?ssl=true&replicaSet=atlas-ljqfpq-shard-0&authSource=admin&appName=Cluster0"
-
+const mongoURI = process.env.MONGO_URI
 mongoose.connect(mongoURI).then(
     () => {
         console.log("connect to MongoDB successfully")
@@ -25,8 +28,8 @@ mongoose.connect(mongoURI).then(
     }
 )
 
-app.use('/users', userRouter)
-app.use('/products', productRouter)
+app.use('/api/users', userRouter)
+app.use('/api/products', productRouter)
 
 app.listen(5000, () => {
     console.log('Server is running on port 5000')

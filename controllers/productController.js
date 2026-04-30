@@ -31,7 +31,7 @@ export async function createProduct(req, res){
 
         data.productId = req.body.productId
 
-        if(req.body.name == null){
+        if(req.body.productName == null){
             return res.status(400).json(
                 {
                     message : "Product name is required"
@@ -39,11 +39,11 @@ export async function createProduct(req, res){
             )
         }
 
-        data.name = req.body.name
-        data.description = req.body.description || ""
+        data.productName = req.body.productName
+        data.productDescription = req.body.productDescription || ""
         data.altName = req.body.altName || []
 
-        if(req.body.price == null){
+        if(req.body.productPrice == null){
             return res.status(400).json(
                 {
                     message : "Product price is required"
@@ -51,8 +51,8 @@ export async function createProduct(req, res){
             )
         }
 
-        data.price = req.body.price
-        data.labelPrice = req.body.labelPrice || req.body.price
+        data.productPrice = req.body.productPrice
+        data.labelPrice = req.body.labelPrice || req.body.productPrice
         data.category = req.body.category || "Others"
         data.images = req.body.images || ["https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png", "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"]
         data.isVisible = req.body.isVisible ?? true
@@ -94,7 +94,7 @@ export async function updateProduct(req, res){
 
         const data = {}
 
-        if(req.body.name == null){
+        if(req.body.productName == null){
             return res.status(400).json(
                 {
                     message : "Product name is required"
@@ -102,11 +102,11 @@ export async function updateProduct(req, res){
             )
         }
 
-        data.name = req.body.name
-        data.description = req.body.description || ""
+        data.productName = req.body.productName
+        data.productDescription = req.body.productDescription || ""
         data.altName = req.body.altName || []
 
-        if(req.body.price == null){
+        if(req.body.productPrice == null){
             return res.status(400).json(
                 {
                     message : "Product price is required"
@@ -114,8 +114,8 @@ export async function updateProduct(req, res){
             )
         }
 
-        data.price = req.body.price
-        data.labelPrice = req.body.labelPrice || req.body.price
+        data.productPrice = req.body.productPrice
+        data.labelPrice = req.body.labelPrice || req.body.productPrice
         data.category = req.body.category || "Others"
         data.images = req.body.images || ["https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png", "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"]
         data.isVisible = req.body.isVisible
@@ -169,7 +169,7 @@ export async function getProducts(req, res){
 
 export async function deleteProduct(req, res){
     if(!isAdmin(req)){
-        res.ststus(403).json(
+        res.status(403).json(
             {
                 message : "Only admin users can delete products"
             }
